@@ -1,50 +1,61 @@
-import argparse
-import os
-from typing import Optional
+from pprint import pprint as print
+from typing import List
 
-from dotenv import load_dotenv
+import click
 from openai import OpenAI
-
-# Load env variables
-load_dotenv(".env")
+from openai.types.chat.chat_completion import ChatCompletion
 
 
-def main(
-    user_content: str,
-    system_content: Optional[
-        str
-    ] = "You an insightful assistant, skilled in reading various academic papers and aiding in empirical software engineering research.",
-) -> None:
-    # init openai client
-    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+@click.command()
+@click.option(
+    "systemPrompt",
+    "-s",
+    "--system-prompt",
+    help="The system prompt to pass to the GPT model",
+    required=False,
+    default="You are an insightful assistant, skilled in reading various academic papers and aiding in empirical software engineering research",
+    type=str,
+)
+@click.option(
+    "gptModel",
+    "-g",
+    "--gpt-model",
+    help="The specific GPT model that you want to use from OpenAI",
+    required=False,
+    default="gpt-3.5-turbo",
+    type=str,
+)
+@click.option(
+    "userPrompt",
+    "-u",
+    "--user-prompt",
+    help="The user prompt to pass to the GPT model",
+    required=True,
+    type=str,
+)
+@click.option(
+    "apiKey",
+    "-k",
+    "--api-key",
+    help="Your OpenAI GPT API key",
+    required=True,
+    type=str,
+)
+def main(systemPrompt: str, gptModel: str, userPrompt: str, apiKey: str) -> None:
+    client: OpenAI = OpenAI(api_key=apiKey)
 
-    # create completion
-    completion = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": user_content},
-        ],
+    headers: List[dict[str, str]] = [
+        {"role": "system", "content": systemPrompt},
+        {"role": "user", "content": userPrompt},
+    ]
+
+    response: ChatCompletion = client.chat.completions.create(
+        model=gptModel,
+        messages=headers,
     )
 
-    # print returned mssg
-    print(completion.choices[0].message)
+    print(response.choices[0].model_dump_json(indent=4))
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="A cli tool to interact with OpenAI's api"
-    )
-    parser.add_argument(
-        "--user_content", type=str, help="The user content to prompt the ai with"
-    )
-    parser.add_argument(
-        "--system_content",
-        type=str,
-        default="You an insightful assistant, skilled in reading various academic papers and aiding in empirical software engineering research.",
-        help="The system content for the ai - who they are (optional)",
-    )
-
-    args = parser.parse_args()
-
-    main(args.user_content, args.system_content)
+    main()
