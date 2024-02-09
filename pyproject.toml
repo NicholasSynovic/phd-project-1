@@ -12,6 +12,7 @@ tiktoken = "^0.6.0"
 pypdf = {version = "^4.0.1", extras = ["crypto"]}
 click = "^8.1.7"
 progress = "^1.6"
+pandas = "^2.2.0"
 
 
 [build-system]

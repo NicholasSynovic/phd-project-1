@@ -1,0 +1,18 @@
+Model Name,Input Tokens,Output Tokens,Net Tokens
+gpt-4-0125-preview,128000,4096,123904
+gpt-4-turbo-preview,128000,4096,123904
+gpt-4-1106-preview,128000,4096,123904
+gpt-4-vision-preview,128000,4096,123904
+gpt-4,8192,0,8192
+gpt-4-0613,8192,0,8192
+gpt-4-32k,32768,0,32768
+gpt-4-32k-0613,32768,0,32768
+gpt-3.5-turbo-0125,16385,4096,12289
+gpt-3.5-turbo,4096,4096,0
+gpt-3.5-turbo-1106,16385,4096,12289
+gpt-3.5-turbo-instruct,4096,0,4096
+gpt-3.5-turbo-16k,16385,0,16385
+gpt-3.5-turbo-0613,4096,0,4096
+gpt-3.5-turbo-16k-0613,16385,0,16385
+babbage-002,16385,0,16385
+davinci-002,16385,0,16385
