@@ -1,6 +1,5 @@
 from os.path import abspath, isfile
 from pathlib import Path
-from pprint import pprint as print
 from typing import List, Literal
 
 import click
@@ -34,7 +33,17 @@ def encodeText(text: str) -> List[int]:
     required=True,
     type=Path,
 )
-def main(pdf: Path) -> None:
+@click.option(
+    "printTokenLength",
+    "-l",
+    "--token-length",
+    help="Rather than printing the text of a PDF file, print its token length",
+    required=False,
+    default=False,
+    type=bool,
+    is_flag=True,
+)
+def main(pdf: Path, printTokenLength: bool) -> None:
     """
     Simple function to extract all text from a PDF and print it to the console.
     """
@@ -59,9 +68,11 @@ def main(pdf: Path) -> None:
             text = text + content
             bar.next()
 
-    encodedText: List[int] = encodeText(text=text)
-
-    print(text)
+    if printTokenLength:
+        encodedText: List[int] = encodeText(text=text)
+        print(len(encodedText))
+    else:
+        print(text)
 
 
 if __name__ == "__main__":
