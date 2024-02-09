@@ -8,15 +8,19 @@ from progress.bar import Bar
 from pypdf import PageObject, PdfReader
 from tiktoken.core import Encoding
 
+from phd_project_1.utils import encodeTextForGPTModel, identifyAbsolutePath
 
-def identifyAbsolutePath(path: Path) -> Path | Literal[False]:
-    absPath: Path = Path(abspath(path))
 
-    if isfile(path=absPath) and absPath.suffix == ".pdf":
-        return absPath
+def identifyPDFAbsolutePath(path: Path) -> Path | Literal[False]:
+    pdfAbsolutePath: Path | Literal[False] = identifyAbsolutePath(
+        path=path,
+        checkFileExistence=True,
+    )
 
-    else:
+    if pdfAbsolutePath == False or pdfAbsolutePath.suffix != ".pdf":
         return False
+
+    return pdfAbsolutePath
 
 
 def encodeText(text: str) -> List[int]:
@@ -48,7 +52,7 @@ def main(pdf: Path, printTokenLength: bool) -> None:
     Simple function to extract all text from a PDF and print it to the console.
     """
 
-    pdfAbsPath: Path | Literal[False] = identifyAbsolutePath(path=pdf)
+    pdfAbsPath: Path | Literal[False] = identifyPDFAbsolutePath(path=pdf)
 
     if pdfAbsPath == False:
         print("Invalid input. Please use a valid path to a PDF file.")
@@ -69,8 +73,8 @@ def main(pdf: Path, printTokenLength: bool) -> None:
             bar.next()
 
     if printTokenLength:
-        encodedText: List[int] = encodeText(text=text)
-        print(len(encodedText))
+        encodedTextLength: int = encodeTextForGPTModel(text=text)[1]
+        print(encodedTextLength)
     else:
         print(text)
 
