@@ -9,7 +9,8 @@ from tiktoken.core import Encoding
 
 
 def encodeTextForGPTModel(
-    text: str, gptModel: str = "gpt-3.5-turbo"
+    text: str,
+    gptModel: str = "gpt-3.5-turbo",
 ) -> Tuple[List[int], int]:
     encoding: Encoding = tiktoken.encoding_for_model(model_name=gptModel)
     encodedText: List[int] = encoding.encode(text=text)
@@ -26,7 +27,8 @@ def getGPTModelTokenLimits(
 
 
 def identifyAbsolutePath(
-    path: Path, checkFileExistence: bool = False
+    path: Path,
+    checkFileExistence: bool = False,
 ) -> Path | Literal[False]:
     absolutePath: Path = Path(abspath(path=path))
 

@@ -11,16 +11,20 @@ from tiktoken.core import Encoding
 from phd_project_1.utils import encodeTextForGPTModel, identifyAbsolutePath
 
 
-def identifyPDFAbsolutePath(path: Path) -> Path | Literal[False]:
-    pdfAbsolutePath: Path | Literal[False] = identifyAbsolutePath(
+def identifyDocumentAbsolutePath(
+    path: Path,
+    suffix: str = ".pdf",
+    checkDocumentExistence: bool = True,
+) -> Path | Literal[False]:
+    documentAbsolutePath: Path | Literal[False] = identifyAbsolutePath(
         path=path,
-        checkFileExistence=True,
+        checkFileExistence=checkDocumentExistence,
     )
 
-    if pdfAbsolutePath == False or pdfAbsolutePath.suffix != ".pdf":
+    if documentAbsolutePath == False or documentAbsolutePath.suffix != suffix:
         return False
 
-    return pdfAbsolutePath
+    return documentAbsolutePath
 
 
 def encodeText(text: str) -> List[int]:
@@ -30,7 +34,7 @@ def encodeText(text: str) -> List[int]:
 
 @click.command()
 @click.option(
-    "pdf",
+    "pdfPath",
     "-p",
     "--pdf",
     help="Path to PDF file",
@@ -38,25 +42,52 @@ def encodeText(text: str) -> List[int]:
     type=Path,
 )
 @click.option(
-    "printTokenLength",
+    "outputFilePath",
+    "-o",
+    "--output",
+    help="Path to output text file",
+    required=True,
+    type=Path,
+)
+@click.option(
+    "tokenLengthToConsole",
     "-l",
     "--token-length",
-    help="Rather than printing the text of a PDF file, print its token length",
+    help="Print token length to console",
     required=False,
     default=False,
     type=bool,
     is_flag=True,
 )
-def main(pdf: Path, printTokenLength: bool) -> None:
+@click.option(
+    "textToConsole",
+    "-t",
+    "--text",
+    help="Print PDF text to console",
+    required=False,
+    default=False,
+    type=bool,
+    is_flag=True,
+)
+def main(
+    pdfPath: Path,
+    outputFilePath: Path,
+    tokenLengthToConsole: bool = False,
+    textToConsole: bool = False,
+) -> None:
     """
     Simple function to extract all text from a PDF and print it to the console.
     """
 
-    pdfAbsPath: Path | Literal[False] = identifyPDFAbsolutePath(path=pdf)
+    pdfAbsPath: Path | Literal[False] = identifyDocumentAbsolutePath(path=pdfPath)
 
     if pdfAbsPath == False:
         print("Invalid input. Please use a valid path to a PDF file.")
         exit(1)
+
+    outputAbsPath: Path | Literal[False] = identifyDocumentAbsolutePath(
+        path=outputFilePath
+    )
 
     text: str = ""
 
