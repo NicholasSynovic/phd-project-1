@@ -1,10 +1,11 @@
-from pprint import pprint as print
-from typing import List
+from pathlib import Path
+from typing import List, Literal
 
 import click
-import openai
 from openai import OpenAI
 from openai.types.chat.chat_completion import ChatCompletion
+
+from phd_project_1.utils import *
 
 
 @click.command()
@@ -42,7 +43,25 @@ from openai.types.chat.chat_completion import ChatCompletion
     required=True,
     type=str,
 )
-def main(systemPrompt: str, gptModel: str, userPrompt: str, apiKey: str) -> None:
+@click.option(
+    "textFile",
+    "-i",
+    "--text-file-input",
+    help="Path to a text file to read from as input",
+    required=True,
+    type=Path,
+)
+def main(
+    systemPrompt: str,
+    gptModel: str,
+    userPrompt: str,
+    apiKey: str,
+    textFile: Path,
+) -> None:
+    textFileAbsPath: Path | Literal[False] = identifyAbsolutePath(
+        path=textFile, checkFileExistence=True
+    )
+
     client: OpenAI = OpenAI(api_key=apiKey)
 
     headers: List[dict[str, str]] = [

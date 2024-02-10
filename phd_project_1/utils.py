@@ -28,9 +28,13 @@ def getGPTModelTokenLimits(
 
 def identifyAbsolutePath(
     path: Path,
+    suffix: str,
     checkFileExistence: bool = False,
 ) -> Path | Literal[False]:
     absolutePath: Path = Path(abspath(path=path))
+
+    if absolutePath == False or absolutePath.suffix != suffix:
+        return False
 
     if checkFileExistence:
         if isfile(path=absolutePath):

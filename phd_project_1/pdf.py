@@ -8,22 +8,6 @@ from pypdf import PageObject, PdfReader
 from phd_project_1.utils import encodeTextForGPTModel, identifyAbsolutePath
 
 
-def identifyDocumentAbsolutePath(
-    path: Path,
-    suffix: str = ".pdf",
-    checkDocumentExistence: bool = True,
-) -> Path | Literal[False]:
-    documentAbsolutePath: Path | Literal[False] = identifyAbsolutePath(
-        path=path,
-        checkFileExistence=checkDocumentExistence,
-    )
-
-    if documentAbsolutePath == False or documentAbsolutePath.suffix != suffix:
-        return False
-
-    return documentAbsolutePath
-
-
 @click.command(context_settings={"show_default": True})
 @click.option(
     "pdfPath",
@@ -81,19 +65,20 @@ def main(
     Simple function to extract all text from a PDF and print it to the console.
     """
 
-    pdfAbsPath: Path | Literal[False] = identifyDocumentAbsolutePath(
+    pdfAbsPath: Path | Literal[False] = identifyAbsolutePath(
         path=pdfPath,
-        checkDocumentExistence=True,
+        suffix=".pdf",
+        checkFileExistence=True,
     )
 
     if pdfAbsPath == False:
-        print("Invalid input. Please use a valid path to a PDF file.")
+        print("Invalid input. Please use a valid path to a PDF (.pdf) file.")
         exit(1)
 
-    outputAbsPath: Path | Literal[False] = identifyDocumentAbsolutePath(
+    outputAbsPath: Path | Literal[False] = identifyAbsolutePath(
         path=outputFilePath,
-        checkDocumentExistence=False,
         suffix=outputFilePath.suffix,
+        checkFileExistence=True,
     )
 
     text: str = ""
