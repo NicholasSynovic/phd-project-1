@@ -1,12 +1,9 @@
-from os.path import abspath, isfile
 from pathlib import Path
-from typing import List, Literal
+from typing import Literal
 
 import click
-import tiktoken
 from progress.bar import Bar
 from pypdf import PageObject, PdfReader
-from tiktoken.core import Encoding
 
 from phd_project_1.utils import encodeTextForGPTModel, identifyAbsolutePath
 
@@ -27,12 +24,7 @@ def identifyDocumentAbsolutePath(
     return documentAbsolutePath
 
 
-def encodeText(text: str) -> List[int]:
-    encoder: Encoding = tiktoken.get_encoding("cl100k_base")
-    return encoder.encode(text=text)
-
-
-@click.command()
+@click.command(context_settings={"show_default": True})
 @click.option(
     "pdfPath",
     "-p",
@@ -69,11 +61,21 @@ def encodeText(text: str) -> List[int]:
     type=bool,
     is_flag=True,
 )
+@click.option(
+    "modelName",
+    "-m",
+    "--model",
+    help="Used only in conjuncture with -l / --token-length. Defines a GPT model to encode the text with",
+    required=False,
+    type=str,
+    default="gpt-3.5-turbo",
+)
 def main(
     pdfPath: Path,
     outputFilePath: Path,
-    tokenLengthToConsole: bool = False,
-    textToConsole: bool = False,
+    tokenLengthToConsole: bool,
+    textToConsole: bool,
+    modelName: str,
 ) -> None:
     """
     Simple function to extract all text from a PDF and print it to the console.
@@ -112,7 +114,10 @@ def main(
         print(text)
 
     if tokenLengthToConsole:
-        encodedTextLength: int = encodeTextForGPTModel(text=text)[1]
+        encodedTextLength: int = encodeTextForGPTModel(
+            text=text,
+            gptModel=modelName,
+        )[1]
         print(encodedTextLength)
 
     with open(outputAbsPath, "w") as file:
