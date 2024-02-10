@@ -79,14 +79,19 @@ def main(
     Simple function to extract all text from a PDF and print it to the console.
     """
 
-    pdfAbsPath: Path | Literal[False] = identifyDocumentAbsolutePath(path=pdfPath)
+    pdfAbsPath: Path | Literal[False] = identifyDocumentAbsolutePath(
+        path=pdfPath,
+        checkDocumentExistence=True,
+    )
 
     if pdfAbsPath == False:
         print("Invalid input. Please use a valid path to a PDF file.")
         exit(1)
 
     outputAbsPath: Path | Literal[False] = identifyDocumentAbsolutePath(
-        path=outputFilePath
+        path=outputFilePath,
+        checkDocumentExistence=False,
+        suffix=outputFilePath.suffix,
     )
 
     text: str = ""
@@ -103,11 +108,16 @@ def main(
             text = text + content
             bar.next()
 
-    if printTokenLength:
+    if textToConsole:
+        print(text)
+
+    if tokenLengthToConsole:
         encodedTextLength: int = encodeTextForGPTModel(text=text)[1]
         print(encodedTextLength)
-    else:
-        print(text)
+
+    with open(outputAbsPath, "w") as file:
+        file.write(text)
+        file.close()
 
 
 if __name__ == "__main__":
