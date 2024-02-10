@@ -78,7 +78,7 @@ def main(
     outputAbsPath: Path | Literal[False] = identifyAbsolutePath(
         path=outputFilePath,
         suffix=outputFilePath.suffix,
-        checkFileExistence=True,
+        checkFileExistence=False,
     )
 
     text: str = ""
@@ -108,6 +108,8 @@ def main(
     with open(outputAbsPath, "w") as file:
         file.write(text)
         file.close()
+
+    print(type(text))
 
 
 if __name__ == "__main__":

@@ -23,7 +23,7 @@ def getGPTModelTokenLimits(
     datafile: Path = Path("../data/gptModelTokenLengths.csv"),
 ) -> DataFrame:
     df: DataFrame = pandas.read_csv(filepath_or_buffer=datafile)
-    return df[df["Model Name"] == gptModel].reset_index(inplace=True)
+    return df[df["Model Name"] == gptModel].reset_index(drop=True)
 
 
 def identifyAbsolutePath(
