@@ -8,7 +8,7 @@ from pypdf import PageObject, PdfReader
 from phd_project_1.utils import encodeTextForGPTModel, identifyAbsolutePath
 
 
-@click.command(context_settings={"show_default": True})
+@click.command()
 @click.option(
     "pdfPath",
     "-p",
