@@ -9,6 +9,53 @@ from pandas import DataFrame
 from phd_project_1.utils import *
 
 
+def readTextFile(textFilePath: Path) -> str:
+    textFileAbsPath: Path | Literal[False] = identifyAbsolutePath(
+        path=textFilePath,
+        suffix=".txt",
+        checkFileExistence=True,
+    )
+
+    if textFileAbsPath == False:
+        print("Invalid input file. Please use a valid TXT (.txt) file")
+        quit(1)
+
+    with open(textFileAbsPath, "r") as file:
+        data: str = file.read()
+        file.close()
+
+    return data
+
+
+def getEncodedTextLength(
+    systemPrompt: str,
+    userPrompt: str,
+    gptModel: str,
+) -> Tuple[int, int, int]:
+    """
+    Return format is:
+        0: Length of encoded system prompt (x)
+        1: Length of encoded user prompt (y)
+        2: x + y
+    """
+
+    encodedSystemPromptLength: int = encodeTextForGPTModel(
+        text=systemPrompt,
+        gptModel=gptModel,
+    )[1]
+
+    encodedUserPromptLength: int = encodeTextForGPTModel(
+        text=userPrompt,
+        gptModel=gptModel,
+    )[1]
+
+    return (
+        encodedSystemPromptLength,
+        encodedUserPromptLength,
+        encodedSystemPromptLength + encodedUserPromptLength,
+    )
+
+
 @click.command()
 @click.option(
     "systemPrompt",
@@ -50,34 +97,9 @@ def main(
     apiKey: str,
     textFile: Path,
 ) -> None:
-
-    textFileAbsPath: Path | Literal[False] = identifyAbsolutePath(
-        path=textFile,
-        suffix=".txt",
-        checkFileExistence=True,
-    )
-
-    if textFileAbsPath == False:
-        print("Invalid input file. Please use a valid TXT (.txt) file")
-        quit(1)
-
-    with open(textFileAbsPath, "r") as file:
-        userPrompt: str = file.read()
-        file.close()
-
-    encodedSystemPromptLength: int = encodeTextForGPTModel(
-        text=systemPrompt,
-        gptModel=gptModel,
-    )[1]
-    encodedUserPromptLength: int = encodeTextForGPTModel(
-        text=userPrompt,
-        gptModel=gptModel,
-    )[1]
-
-    totalTokensCount: int = encodedSystemPromptLength + encodedUserPromptLength
+    userPrompt: str = readTextFile(textFilePath=textFile)
 
     # TODO: Set this to read from a user parameter w.r.t data file location
-
     try:
         allowedInputTokenCount: int = getGPTModelTokenLimits(gptModel=gptModel)[
             "Input Tokens"
@@ -86,12 +108,18 @@ def main(
         print("Invalid GPT model")
         quit(2)
 
-    if totalTokensCount > allowedInputTokenCount:
+    tokenLengths: Tuple[int, int, int] = getEncodedTextLength(
+        systemPrompt=systemPrompt,
+        userPrompt=userPrompt,
+        gptModel=gptModel,
+    )
+
+    if tokenLengths[2] > allowedInputTokenCount:
         print(
             f"""
 Your encoded system and user prompts are to long for {gptModel}
 System prompt + User prompt > Input token limit
-{encodedSystemPromptLength} + {encodedUserPromptLength} > {allowedInputTokenCount}
+{tokenLengths[0]} + {tokenLengths[1]} = {tokenLengths[2]} > {allowedInputTokenCount}
 """
         )
 

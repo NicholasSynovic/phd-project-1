@@ -2,6 +2,7 @@ from os.path import abspath, isfile
 from pathlib import Path
 from typing import List, Literal, Tuple
 
+import nltk
 import pandas
 import tiktoken
 from pandas import DataFrame
@@ -43,3 +44,7 @@ def identifyAbsolutePath(
             return False
 
     return absolutePath
+
+
+def downloadNLTKStopwords() -> None:
+    nltk.download(info_or_id="stopwords")
