@@ -11,8 +11,8 @@ from phd_project_1.utils import encodeTextForGPTModel, identifyAbsolutePath
 @click.command()
 @click.option(
     "pdfPath",
-    "-p",
-    "--pdf",
+    "-i",
+    "--input",
     help="Path to PDF file",
     required=True,
     type=Path,
