@@ -12,7 +12,8 @@ from tiktoken.core import Encoding
 
 
 def downloadNLTKStopwords() -> None:
-    nltk.download(info_or_id="stopwords")
+    nltk.download(info_or_id="stopwords", quiet=True)
+    nltk.download(info_or_id="punkt", quiet=True)
 
 
 def encodeTextForGPTModel(

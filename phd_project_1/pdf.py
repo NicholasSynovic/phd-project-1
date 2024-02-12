@@ -109,8 +109,6 @@ def main(
         file.write(text)
         file.close()
 
-    print(type(text))
-
 
 if __name__ == "__main__":
     main()

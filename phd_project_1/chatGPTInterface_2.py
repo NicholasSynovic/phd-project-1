@@ -31,6 +31,7 @@ def getEncodedTextLength(
     systemPrompt: str,
     userPrompt: str,
     gptModel: str,
+    removeStopWords: bool,
 ) -> Tuple[int, int, int]:
     """
     Return format is:
@@ -42,11 +43,13 @@ def getEncodedTextLength(
     encodedSystemPromptLength: int = encodeTextForGPTModel(
         text=systemPrompt,
         gptModel=gptModel,
+        removeStopWords=False,
     )[1]
 
     encodedUserPromptLength: int = encodeTextForGPTModel(
         text=userPrompt,
         gptModel=gptModel,
+        removeStopWords=removeStopWords,
     )[1]
 
     return (
@@ -112,7 +115,11 @@ def main(
         systemPrompt=systemPrompt,
         userPrompt=userPrompt,
         gptModel=gptModel,
+        removeStopWords=True,
     )
+    print(tokenLengths[1])
+
+    quit()
 
     if tokenLengths[2] > allowedInputTokenCount:
         print(
