@@ -1,0 +1,3 @@
+[submodule "scripts/optparse"]
+	path = scripts/optparse
+	url = https://github.com/nk412/optparse.git
