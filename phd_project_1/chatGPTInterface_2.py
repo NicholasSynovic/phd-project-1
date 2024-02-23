@@ -75,7 +75,7 @@ def getEncodedTextLength(
     "--gpt-model",
     help="The specific GPT model that you want to use from OpenAI",
     required=False,
-    default="gpt-3.5-turbo",
+    default="gpt-4-turbo-preview",
     type=str,
 )
 @click.option(
@@ -117,9 +117,6 @@ def main(
         gptModel=gptModel,
         removeStopWords=True,
     )
-    print(tokenLengths[1])
-
-    quit()
 
     if tokenLengths[2] > allowedInputTokenCount:
         print(
@@ -129,8 +126,7 @@ System prompt + User prompt > Input token limit
 {tokenLengths[0]} + {tokenLengths[1]} = {tokenLengths[2]} > {allowedInputTokenCount}
 """
         )
-
-    quit(3)
+        quit(3)
 
     client: OpenAI = OpenAI(api_key=apiKey)
 
